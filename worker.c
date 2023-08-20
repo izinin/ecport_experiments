@@ -3,12 +3,35 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "erl_comm.h"
 
-void* func(void* arg)
+typedef unsigned char byte;
+
+int erl_comm_entry() {
+  int fn, arg, res;
+  byte buf[100];
+
+  while (read_cmd(buf) > 0) {
+    fn = buf[0];
+    arg = buf[1];
+    
+    if (fn == 1) {
+      res = foo(arg);
+    } else if (fn == 2) {
+      res = bar(arg);
+    }
+
+    buf[0] = res;
+    write_cmd(buf, 1);
+  }
+}
+
+void* workload(void* )
 {
-	// detach the current thread
-	// from the calling thread
+	// detach the current thread from the calling thread
 	pthread_detach(pthread_self());
+
+	erl_comm_entry();
 
 	printf("Inside the thread\n");
 
@@ -16,12 +39,12 @@ void* func(void* arg)
 	pthread_exit(NULL);
 }
 
-void fun()
+void worker()
 {
 	pthread_t ptid;
 
 	// Creating a new thread
-	pthread_create(&ptid, NULL, &func, NULL);
+	pthread_create(&ptid, NULL, &workload, NULL);
 	printf("This line may be printed"
 		" before thread terminates\n");
 
@@ -42,11 +65,4 @@ void fun()
 		" after thread ends\n");
 
 	pthread_exit(NULL);
-}
-
-// Driver code
-int main()
-{
-	fun();
-	return 0;
 }

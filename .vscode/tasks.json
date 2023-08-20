@@ -7,7 +7,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "complex.c", "erl_comm.c",  "port.c",
+                "complex.c", "erl_comm.c",  "port.c", "worker.c",
                 "-o",
                 "extprg"
             ],
