@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.org": "org",
+        "system_error": "c"
+    }
+}
